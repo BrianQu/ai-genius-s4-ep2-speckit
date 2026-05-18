@@ -1,4 +1,4 @@
-name: 002 Deploy Web to Static Web App
+name: 002 Deploy Web to Azure Static Web Apps
 
 on:
   push:
@@ -19,15 +19,25 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  ENVIRONMENT: ${{ github.event.inputs.environment || 'dev' }}
+  APP_NAME: ${{ vars.APP_NAME }}
+
 jobs:
-  build_and_deploy_web:
-    name: Build and Deploy Web
+  deploy:
+    name: Build & Deploy Frontend
     runs-on: ubuntu-latest
     environment: ${{ github.event.inputs.environment || 'dev' }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
@@ -38,7 +48,7 @@ jobs:
         working-directory: src/ai-genius-web
         run: npm ci
 
-      - name: Build
+      - name: Build frontend
         working-directory: src/ai-genius-web
         run: npm run build
         env:
