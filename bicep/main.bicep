@@ -16,7 +16,7 @@ param environment string = 'dev'
 
 @description('SKU for the App Service Plan.')
 @allowed(['F1', 'B1', 'B2', 'S1'])
-param appServicePlanSku string = 'B1'
+param appServicePlanSku string = 'S1'
 
 @description('SKU for the Static Web App.')
 @allowed(['Free', 'Standard'])
